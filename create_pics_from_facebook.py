@@ -1,7 +1,7 @@
 import cv
 import cv2
 import os
-import Image
+from PIL import Image
 import json
 import numpy as np
 import urllib2
@@ -10,6 +10,7 @@ from StringIO import StringIO
 CASCADE = "./haarcascade_frontalface_alt.xml"
 OUTPUT_DIRECTORY = "./face_root_directory/"
 ACCESS_TOKEN = "YOUR FACEBOOK API TOKEN GOES HERE.  Visit https://developers.facebook.com/tools/explorer for easy access to a token"
+OFFSET = 0 # tried using FB's offset in call but didn't work
 
 IMAGE_SCALE = 2
 haar_scale = 1.2
@@ -35,7 +36,7 @@ def make_request(query):
 
 
 def get_friend_service_ids():
-    query = "me/friends?limit=5000&offset=0&access_token=%s" % ACCESS_TOKEN
+    query = "me/friends?limit=5000&offset=%d&access_token=%s" % (OFFSET, ACCESS_TOKEN)
     facebook_response = make_request(query)
     all_friends = facebook_response
     service_ids = [friend.get("id") for friend in all_friends]
@@ -76,7 +77,7 @@ def convert_rgb_to_bgr(open_cv_image):
 def download_photo_as_open_cv_image(photo_url):
     try:
         img = urllib2.urlopen(photo_url).read()
-    except urllib2.HTTPError:
+    except urllib2.HTTPError, urllib2.URLError:
         # possible case of 404 on image
         print "Error fetching image: %s" % photo_url
         return None
