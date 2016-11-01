@@ -206,6 +206,8 @@ if __name__ == '__main__':
                 # greater confidence and this generally produces the correct
                 # results
                 total_matches += 1
+        except KeyboardInterrupt as e:
+            raise
         except:
             continue
     print "Total matches: %s" % total_matches
